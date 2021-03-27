@@ -1,7 +1,7 @@
 package dto
 
 type WeatherData struct {
-    MessageId     string  `json:"messageId"`
+    Source        string  `json:"source"`
     Timestamp     string  `json:"timestamp"`
     Temperature   float64 `json:"temperature"`
     Humidity      uint8   `json:"humidity"`
