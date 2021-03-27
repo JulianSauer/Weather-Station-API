@@ -55,7 +55,11 @@ func getLatestWeatherData() (events.APIGatewayProxyResponse, error) {
     }
     return events.APIGatewayProxyResponse{
         StatusCode: http.StatusOK,
-        Body:       string(jsonResponse),
+        Headers: map[string]string{
+            "Content-Type":                "application/json",
+            "Access-Control-Allow-Origin": "*",
+        },
+        Body: string(jsonResponse),
     }, nil
 }
 
@@ -79,6 +83,10 @@ func getWeatherDataFiltered(beginDate string, endDate string) (events.APIGateway
     }
     return events.APIGatewayProxyResponse{
         StatusCode: http.StatusOK,
+        Headers: map[string]string{
+            "Content-Type":                "application/json",
+            "Access-Control-Allow-Origin": "*",
+        },
         Body:       string(jsonResponse),
     }, nil
 }
