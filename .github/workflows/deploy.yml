@@ -24,10 +24,6 @@ jobs:
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
       - name: Build forecast endpoint
         run: GOOS=linux go build forecast/main.go && zip forecast.zip main
-        env:
-          TOMORROWIO_API_KEY: ${{ secrets.TOMORROWIO_API_KEY }}
-          LONGITUDE: ${{ secrets.LONGITUDE }}
-          LATITUDE: ${{ secrets.LATITUDE }}
       - name: Upload forecast endpoint to S3
         uses: zdurham/s3-upload-github-action@master
         env:

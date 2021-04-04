@@ -4,16 +4,14 @@ import (
     "encoding/json"
     "errors"
     "github.com/JulianSauer/Weather-Station-API/dto"
+    "github.com/JulianSauer/Weather-Station-API/secrets"
     "github.com/go-resty/resty/v2"
     "net/http"
-    "os"
     "time"
 )
 
 const ISO8601 = "2006-01-02T15:04:05Z"
 
-var API_KEY = "&apikey=" + os.Getenv("TOMORROWIO_API_KEY")
-var LOCATION = "&location=" + os.Getenv("LATITUDE") + "," + os.Getenv("LONGITUDE")
 const HOURLY = "&timesteps=1h"
 const DAILY = "&timesteps=1d"
 
@@ -21,9 +19,7 @@ var API = "https://api.tomorrow.io/v4/timelines?" +
     "units=metric" +
     "&timezone=Europe/Berlin" +
     "&fields=temperature" +
-    "&fields=precipitationProbability" +
-    LOCATION +
-    API_KEY
+    "&fields=precipitationProbability"
 
 type Forecast struct {
     Data struct {
@@ -58,7 +54,11 @@ func Next5Days() ([]dto.ForecastResult, error) {
 
 func queryTomorrowIOAPI(timeInterval string, startTime string, endTime string) ([]dto.ForecastResult, error) {
     client := resty.New()
-    url := API +
+    baseUrl, e := createBaseUrl()
+    if e != nil {
+        return nil, e
+    }
+    url := *baseUrl +
         timeInterval +
         "&startTime=" + startTime +
         "&endTime=" + endTime
@@ -85,4 +85,15 @@ func queryTomorrowIOAPI(timeInterval string, startTime string, endTime string) (
         }
     }
     return result, nil
+}
+
+func createBaseUrl() (*string, error) {
+    s, e := secrets.Get()
+    if e != nil {
+        return nil, e
+    }
+    url := API +
+        "&location=" + s.Latitude + "," + s.Longitude +
+        "&apikey=" + s.ApiKeyTomorrowIO
+    return &url, nil
 }
