@@ -5,6 +5,7 @@ import (
     "errors"
     "fmt"
     "github.com/JulianSauer/Weather-Station-API/dto"
+    "github.com/JulianSauer/Weather-Station-API/helper"
     "github.com/aws/aws-lambda-go/events"
     "github.com/aws/aws-lambda-go/lambda"
     "github.com/aws/aws-sdk-go/aws"
@@ -41,17 +42,17 @@ func getLatestWeatherData() (events.APIGatewayProxyResponse, error) {
 
     result, e := queryLatest(timestamp)
     if e != nil {
-        return serverError(e)
+        return helper.ServerError(e)
     }
 
     response := dto.WeatherData{}
     e = dynamodbattribute.UnmarshalMap(result, &response)
     if e != nil {
-        return serverError(e)
+        return helper.ServerError(e)
     }
     jsonResponse, e := json.Marshal(response)
     if e != nil {
-        return serverError(e)
+        return helper.ServerError(e)
     }
     return events.APIGatewayProxyResponse{
         StatusCode: http.StatusOK,
@@ -72,32 +73,12 @@ func getWeatherDataFiltered(beginDate string, endDate string) (events.APIGateway
         data := dto.WeatherData{}
         e = dynamodbattribute.UnmarshalMap(item, &data)
         if e != nil {
-            return serverError(e)
+            return helper.ServerError(e)
         }
         response[i] = data
     }
 
-    jsonResponse, e := json.Marshal(response)
-    if e != nil {
-        return serverError(e)
-    }
-    return events.APIGatewayProxyResponse{
-        StatusCode: http.StatusOK,
-        Headers: map[string]string{
-            "Content-Type":                "application/json",
-            "Access-Control-Allow-Origin": "*",
-        },
-        Body:       string(jsonResponse),
-    }, nil
-}
-
-func serverError(e error) (events.APIGatewayProxyResponse, error) {
-    fmt.Println(e.Error())
-
-    return events.APIGatewayProxyResponse{
-        StatusCode: http.StatusInternalServerError,
-        Body:       http.StatusText(http.StatusInternalServerError),
-    }, nil
+    return helper.OkResponse(response)
 }
 
 func dbConnection() *dynamodb.DynamoDB {
