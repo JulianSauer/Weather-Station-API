@@ -31,7 +31,7 @@ type Forecast struct {
                 StartTime time.Time `json:"startTime"`
                 Values    struct {
                     Temperature              float64 `json:"temperature"`
-                    PrecipitationProbability int     `json:"precipitationProbability"`
+                    PrecipitationProbability float64 `json:"precipitationProbability"`
                 } `json:"values"`
             } `json:"intervals"`
         } `json:"timelines"`
@@ -79,8 +79,8 @@ func queryTomorrowIOAPI(timeInterval string, startTime string, endTime string) (
     result := make([]dto.ForecastResult, len(forecastData))
     for i, entry := range forecastData {
         result[i] = dto.ForecastResult{
-            Timestamp:   entry.StartTime.Format("20060102-150405"),
-            Temperature: entry.Values.Temperature,
+            Timestamp:                entry.StartTime.Format("20060102-150405"),
+            Temperature:              entry.Values.Temperature,
             PrecipitationProbability: entry.Values.PrecipitationProbability,
         }
     }
