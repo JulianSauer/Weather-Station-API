@@ -6,6 +6,7 @@ import (
     "github.com/JulianSauer/Weather-Station-API/clients/tomorrowio"
     "github.com/JulianSauer/Weather-Station-API/dto"
     "github.com/JulianSauer/Weather-Station-API/secrets"
+    "github.com/aws/aws-lambda-go/lambda"
     "github.com/aws/aws-sdk-go/aws"
     "github.com/aws/aws-sdk-go/aws/session"
     "github.com/aws/aws-sdk-go/service/sns"
@@ -16,6 +17,10 @@ var location *time.Location
 var topic string
 
 func main() {
+    lambda.Start(handler)
+}
+
+func handler() {
     location, _ = time.LoadLocation("Europe/Berlin")
     s, e := secrets.Get()
     if e != nil {
