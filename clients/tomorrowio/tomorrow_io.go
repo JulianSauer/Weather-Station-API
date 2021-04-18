@@ -41,7 +41,7 @@ type Forecast struct {
 func Next24Hours() ([]dto.ForecastResult, error) {
     now := time.Now()
     location, _ := time.LoadLocation("Europe/Berlin")
-    startTime := time.Date(now.Year(), now.Month(), now.Day(), now.Hour()+1, 0, 0, 0, location).In(time.UTC)
+    startTime := time.Date(now.Year(), now.Month(), now.Day(), now.In(location).Hour()+1, 0, 0, 0, location).In(time.UTC)
     endTime := startTime.AddDate(0, 0, 1)
     return queryTomorrowIOAPI(HOURLY, startTime.Format(ISO8601), endTime.Format(ISO8601))
 }
