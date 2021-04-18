@@ -33,3 +33,14 @@ jobs:
           S3_KEY: 'WeatherAPI/forecast.zip'
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      - name: Build data mining function
+        run: GOOS=linux go build datamining/main.go && zip datamining.zip main
+      - name: Upload forecast endpoint to S3
+        uses: zdurham/s3-upload-github-action@master
+        env:
+          FILE: ./datamining.zip
+          AWS_REGION: 'eu-central-1'
+          S3_BUCKET: 'weather-station-lambda-functions'
+          S3_KEY: 'WeatherAPI/datamining.zip'
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
