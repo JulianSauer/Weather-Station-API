@@ -40,8 +40,8 @@ func getData() ([]string, []error) {
     var results []string
     var errors []error
 
-    results, errors = formatData(results, errors, "TomorrowIO", tomorrowio.Next24Hours)
-    results, errors = formatData(results, errors, "TomorrowIO", tomorrowio.Next5Days)
+    results, errors = formatData(results, errors, "TomorrowIO-Hourly", tomorrowio.Next24Hours)
+    results, errors = formatData(results, errors, "TomorrowIO-Daily", tomorrowio.Next5Days)
 
     return results, errors
 }
@@ -78,6 +78,11 @@ func formatData(results []string, errors []error, provider string, providerFunct
             errors = append(errors, e)
         } else {
             results = append(results, string(resultsAsJson))
+
+            latest := minedWeatherForecast
+            latest.Timestamp = "latest"
+            latestAsJson, _ := json.Marshal(latest)
+            results = append(results, string(latestAsJson))
         }
     }
     return results, errors
