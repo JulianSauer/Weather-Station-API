@@ -2,10 +2,12 @@ package main
 
 import (
     "errors"
-    "github.com/JulianSauer/Weather-Station-API/clients/tomorrowio"
+    "github.com/JulianSauer/Weather-Station-API/db"
+    "github.com/JulianSauer/Weather-Station-API/dto"
     "github.com/JulianSauer/Weather-Station-API/helper"
     "github.com/aws/aws-lambda-go/events"
     "github.com/aws/aws-lambda-go/lambda"
+    "github.com/aws/aws-sdk-go/service/dynamodb/dynamodbattribute"
 )
 
 func main() {
@@ -25,16 +27,28 @@ func router(request events.APIGatewayProxyRequest) (events.APIGatewayProxyRespon
     case "TomorrowIO":
         switch resolution {
         case "hourly":
-            if result, e := tomorrowio.Next24Hours(); e != nil {
+            result, e := db.QueryLatest("TomorrowIO-Hourly")
+            if e != nil {
                 return helper.ServerError(e)
             } else {
-                return helper.OkResponse(result)
+                response := dto.WeatherData{}
+                e = dynamodbattribute.UnmarshalMap(result, &response)
+                if e != nil {
+                    return helper.ServerError(e)
+                }
+                return helper.OkResponse(response)
             }
         case "daily":
-            if result, e := tomorrowio.Next5Days(); e != nil {
+            result, e := db.QueryLatest("TomorrowIO-Daily")
+            if e != nil {
                 return helper.ServerError(e)
             } else {
-                return helper.OkResponse(result)
+                response := dto.WeatherData{}
+                e = dynamodbattribute.UnmarshalMap(result, &response)
+                if e != nil {
+                    return helper.ServerError(e)
+                }
+                return helper.OkResponse(response)
             }
         }
     }
