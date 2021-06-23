@@ -10,6 +10,7 @@ import (
     "github.com/aws/aws-lambda-go/lambda"
     "github.com/aws/aws-sdk-go/service/dynamodb/dynamodbattribute"
     "net/http"
+    "strconv"
 )
 
 func main() {
@@ -58,9 +59,14 @@ func getWeatherDataFiltered(beginDate string, endDate string) (events.APIGateway
 
     result, e := db.QueryFiltered(beginDate, endDate, "WeatherStation")
     response := make([]dto.WeatherData, len(result))
+    var firstRainData float64
     for i, item := range result {
         data := dto.WeatherData{}
         e = dynamodbattribute.UnmarshalMap(item, &data)
+        if e != nil {
+            return helper.ServerError(e)
+        }
+        firstRainData, data.Rain[0], e = zeroRainData(i, firstRainData, data.Rain[0])
         if e != nil {
             return helper.ServerError(e)
         }
@@ -68,4 +74,21 @@ func getWeatherDataFiltered(beginDate string, endDate string) (events.APIGateway
     }
 
     return helper.OkResponse(response)
+}
+
+func zeroRainData(i int, firstRainData float64, currentRainData string) (float64, string, error) {
+    if i == 0 {
+        if firstRain, e := strconv.ParseFloat(currentRainData, 64); e != nil {
+            return firstRain, "", e
+        } else {
+            return firstRain, "0.0", nil
+        }
+    } else {
+        if currentRain, e := strconv.ParseFloat(currentRainData, 64); e != nil {
+            return firstRainData, "", e
+        } else {
+            currentRain -= firstRainData
+            return firstRainData, fmt.Sprintf("%f", currentRain), nil
+        }
+    }
 }
