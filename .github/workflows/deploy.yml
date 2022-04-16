@@ -18,7 +18,7 @@ jobs:
         env:
           FILE: ./function.zip
           AWS_REGION: 'eu-central-1'
-          S3_BUCKET: 'weather-station-lambda-functions'
+          S3_BUCKET: 'weather-station-binaries'
           S3_KEY: 'WeatherAPI/function.zip'
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
@@ -29,7 +29,7 @@ jobs:
         env:
           FILE: ./forecast.zip
           AWS_REGION: 'eu-central-1'
-          S3_BUCKET: 'weather-station-lambda-functions'
+          S3_BUCKET: 'weather-station-binaries'
           S3_KEY: 'WeatherAPI/forecast.zip'
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
@@ -40,7 +40,7 @@ jobs:
         env:
           FILE: ./datamining.zip
           AWS_REGION: 'eu-central-1'
-          S3_BUCKET: 'weather-station-lambda-functions'
+          S3_BUCKET: 'weather-station-binaries'
           S3_KEY: 'WeatherAPI/datamining.zip'
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
